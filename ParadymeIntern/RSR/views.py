@@ -15,6 +15,7 @@ from RSR.forms import DocumentForm
 from .filters import PersonFilter
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from RSR.persondetails import Detail
 
 
 # UI/INGEST TEAM
@@ -79,9 +80,11 @@ def search(request):
     return render(request, 'SearchExport/search.html', {'personFilter': personFilter})
 
 
-class detail(generic.DetailView):
-    model = Person
-    template_name = 'SearchExport/detail.html'
+def detail(request,pk):
+    # Get the current person object using pk or id
+    person = get_object_or_404(Person,pk=pk)
+    related_obj_list=Detail(person)
+    return render(request, 'SearchExport/detail.html', {'person':person, 'list':related_obj_list})
 
 
 def export(request):

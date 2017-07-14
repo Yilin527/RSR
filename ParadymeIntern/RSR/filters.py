@@ -1,16 +1,37 @@
 import django_filters
-from .models import Person
+from .models import *
+from django_filters.widgets import LinkWidget, LookupTypeWidget, RangeWidget
 from django import forms
 
-TYPERESUME_CHOICES = (
-    ('Current Employee', 'Current Employee'),
-    ('Prospect', 'Prospect')
-)
 
 class PersonFilter(django_filters.FilterSet):
+    SchoolAttend = django_filters.ModelChoiceFilter(name='persontoschool__SchoolID', queryset=School.objects.all(),
+                                                    to_field_name='id')
+    GraduateDate = django_filters.ModelChoiceFilter(name='persontoschool__GradDate',
+                                                    queryset=PersonToSchool.objects.values_list('GradDate',flat=True).distinct(),
+                                                    to_field_name='GradDate')
+    Major = django_filters.ModelChoiceFilter(name='persontoschool__MajorID', queryset=Major.objects.all())
+    DegreeLevel = django_filters.ModelChoiceFilter(name='school__DegreeLevel',
+                                                   queryset=School.objects.values_list('DegreeLevel',flat=True).distinct(),
+                                                   to_field_name='DegreeLevel')
+    GPA = django_filters.ModelChoiceFilter(name='persontoschool__GPA',
+                                                    queryset=PersonToSchool.objects.values_list('GPA',flat=True).distinct(),
+                                                    to_field_name='GPA', lookup_expr='gte')
+    Language = django_filters.ModelChoiceFilter(name='persontolanguage__LangID', queryset=LanguageSpoken.objects.all())
+    Skills = django_filters.ModelChoiceFilter(name ='persontoskills__SkillsID', queryset=Skills.objects.all())
+    YearOfExperienceForSkill = django_filters.ModelChoiceFilter(name='persontoskills__YearsOfExperience',
+                                                                queryset=PersonToSkills.objects.values_list('YearsOfExperience',flat=True).distinct(),
+                                                                to_field_name='YearsOfExperience')
+    ProfessionalDevelopment = django_filters.ModelChoiceFilter(name='persontoprofessionaldevelopment__ProfID',
+                                                               queryset=ProfessionalDevelopment.objects.all())
+    Award = django_filters.ModelChoiceFilter(name='persontoawards__AwardID', queryset=Awards.objects.all())
+    CompanyWorked = django_filters.ModelChoiceFilter(name='persontocompany__CompanyID', queryset=Company.objects.all())
+    Title = django_filters.ModelChoiceFilter(name='persontocompany__Title',
+                                             queryset=PersonToCompany.objects.values_list('Title',flat=True).distinct(),
+                                             to_field_name='Title')
+    SecurityClearance = django_filters.ModelChoiceFilter(name='persontoclearance__ClearanceLevel', queryset=Clearance.objects.all())
 
-    TypeResume = django_filters.ChoiceFilter(choices=TYPERESUME_CHOICES)
-    # language = django_filters.CharFilter(name='language',lookup_expr='icontains')
+
     # skills = django_filters.CharFilter(name='skills', lookup_expr='icontains')
     # certificate = django_filters.CharFilter(name='certificate', lookup_expr='icontains')
     # awards = django_filters.CharFilter(name='awards', lookup_expr='icontains')
@@ -22,4 +43,5 @@ class PersonFilter(django_filters.FilterSet):
 
     class Meta:
         model = Person
-        fields = ['TypeResume',]
+        fields = ['SchoolAttend', 'GraduateDate', 'Major', 'DegreeLevel', 'GPA', 'Language', 'Skills',
+                  'YearOfExperienceForSkill', 'ProfessionalDevelopment', 'Award', 'CompanyWorked', 'Title']
