@@ -171,6 +171,7 @@ class Skills(models.Model):
             yield (field, value)
 
     Name = models.CharField("Skills", max_length=20,default = "None")
+    #skill = models.ManyToManyField(Person, through='PersonToSkills')
 
 
 class LanguageSpoken(models.Model):
@@ -261,7 +262,7 @@ class Volunteering(models.Model):
             yield (field, value)
 
     Name = models.CharField("Volunteering Name", max_length=100,default = "None")
-
+    Volunteer = models.ManyToManyField(Person, through='PersonToVolunteering')
 
 
 ######### INTERMEDIARY TABLES ##########
