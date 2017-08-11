@@ -5,6 +5,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <!--for autocomplete function-->
+    <!-- django autocomplete light gets slow with several thousands of entries may need change later on-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
     <script type="text/javascript" src="/static/collected/admin/js/vendor/jquery/jquery.js"></script>
@@ -50,7 +51,6 @@
     </div>
 
     <form action="" method="Get">
-
         <div class="well">
             <div class="row">
                 <!-- Search Bar -->
@@ -71,6 +71,8 @@
                     Degree Level:
                     {% render_field personFilter.form.DegreeLevel class="form-control" %}
                 </div>
+            </div>
+            <div class="row">
                 <div class="form-group col-sm-4 col-md-3">
                     Major:
                     {% render_field personFilter.form.Major class="form-control" %}
@@ -84,11 +86,17 @@
                     {% render_field personFilter.form.GPAub class="form-control" %}
                 </div>
                 <div class="form-group col-sm-4 col-md-3">
+                    Coursework:
+                    {% render_field personFilter.form.Coursework class="form-control" %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-sm-4 col-md-3">
                     Language Spoken:
                     {% render_field personFilter.form.Language class="form-control" %}
                 </div>
                 <div class="form-group col-sm-4 col-md-3">
-                    Skill:
+                    Skills:
                     {% render_field personFilter.form.Skills class="form-control" %}
                 </div>
                 <div class="form-group col-sm-4 col-md-3">
@@ -99,6 +107,8 @@
                     Awards:
                     {% render_field personFilter.form.Award class="form-control" %}
                 </div>
+            </div>
+            <div class="row">
                 <div class="form-group col-sm-4 col-md-3">
                     Company worked at:
                     {% render_field personFilter.form.CompanyWorked class="form-control" %}
@@ -115,6 +125,8 @@
                     Volunteering:
                     {% render_field personFilter.form.Volunteering class="form-control" %}
                 </div>
+            </div>
+            <div class="row">
                 <div class="form-group col-sm-4 col-md-3">
                     Club:
                     {% render_field personFilter.form.Club_Hobby class="form-control" %}
@@ -125,7 +137,7 @@
                 </div>
                 <div class="form-group col-sm-4 col-md-3">
                     Work Authorization:
-                    {% render_field personFilter.form.year_of_experience_gt class="form-control" %}
+                    {% render_field personFilter.form.WorkAuthorization class="form-control" %}
                 </div>
             </div>
             <div align="center">
@@ -136,14 +148,33 @@
         </div>
     </form>
     {{ form.media }}
+    {% load search_tags %}
     <div align="center">
-        <h4 align="center">Name:</h4>
-        {% for obj in personFilter.qs %}
-            <ul>
-                <li>
-                <a href="{% url 'RSR:detail' obj.pk %}">{{obj.Name}}</a>
-                </li>
-            </ul>
-        {% endfor %}
+        <table class ="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>School</th>
+                    <th>Major</th>
+                    <th>GPA</th>
+                    <th>Degree Level</th>
+                    <th>Skills</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for obj in personFilter.qs %}
+                <tr>
+                    <td><a href="{% url 'RSR:detail' obj.pk %}">{{obj.Name}}</a></td>
+                    {% with obj|preview_details as detailsDict %}
+                        <td>{{detailsDict|get_key:'School'}}</td>
+                        <td>{{detailsDict|get_key:'Major'}}</td>
+                        <td>{{detailsDict|get_key:'GPA'}}</td>
+                        <td>{{detailsDict|get_key:'Degree Level'}}</td>
+                        <td>{{detailsDict|get_key:'Skills'}}</td>
+                    {% endwith %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </body>

@@ -13,6 +13,7 @@ import string
 class Document(models.Model):
     docfile = models.FileField(upload_to='documents/%Y%m%d')
 
+
 class Person(models.Model):
     def get_absolute_url(self):
         return reverse('person_detail', args=[str(self.id)])
@@ -42,6 +43,12 @@ class Person(models.Model):
         ('Prospect', 'Prospect')
     )
 
+    WORKAUTHORIZATION_CHOICES = (
+        ('Citizenship', 'Citizenship'),
+        ('Permanent Resident', 'Permanent Resident'),
+        ('Visa', 'Visa')
+    )
+
     Name = models.CharField("Name", max_length = 50,default = "None")
     Email = models.CharField("Email", max_length = 50,default = "None")
     Address = models.CharField("Address", max_length = 50,default = "None")
@@ -55,6 +62,7 @@ class Person(models.Model):
     Linkedin = models.CharField("LinkedIn", max_length = 70, default = "None")
     GitHub = models.CharField("GitHub", max_length = 70, default = "None")
     TypeResume = models.CharField("Resume Type",max_length = 50, choices = TYPERESUME_CHOICES, default = 'Current Employee')
+    WorkAuthorization = models.CharField("Work Authorization", max_length=20, choices=WORKAUTHORIZATION_CHOICES, default ='Citizenship')
 
 
 class OCR(models.Model):
@@ -73,6 +81,7 @@ class OCR(models.Model):
     CreationDate = models.DateTimeField("Creation")
     CreatedBy = models.ForeignKey(settings.AUTH_USER_MODEL)
     NewPath = models.ForeignKey(Person, blank=True, null=True)
+
 
 class Major(models.Model):
     def get_absolute_url(self):
@@ -110,7 +119,7 @@ class School(models.Model):
 
     Name = models.CharField("School", max_length=50,default = "None")
     DegreeLevel = models.CharField("Degree Level", max_length=50, choices = DEGREELEVEL_CHOICES, default = 'Undergraduate')
-    Students = models.ManyToManyField(Person, through='PersonToSchool')
+
 
 class Coursework(models.Model):
     def get_absolute_url(self):
@@ -127,6 +136,7 @@ class Coursework(models.Model):
     Name = models.CharField("Coursework", max_length=50)
 
 
+
 class ProfessionalDevelopment(models.Model):
     def get_absolute_url(self):
         return reverse('ProfessionalDevelopment_detail', args=[str(self.id)])
@@ -140,7 +150,7 @@ class ProfessionalDevelopment(models.Model):
             yield (field, value)
 
     Name = models.CharField("Professional Development", max_length=20,default = "None")
-    ProfessionalExperience = models.ManyToManyField(Person, through='PersonToProfessionalDevelopment')
+
 
 class SideProject(models.Model):
     def get_absolute_url(self):
@@ -171,7 +181,6 @@ class Skills(models.Model):
             yield (field, value)
 
     Name = models.CharField("Skills", max_length=20,default = "None")
-    #skill = models.ManyToManyField(Person, through='PersonToSkills')
 
 
 class LanguageSpoken(models.Model):
@@ -262,12 +271,15 @@ class Volunteering(models.Model):
             yield (field, value)
 
     Name = models.CharField("Volunteering Name", max_length=100,default = "None")
-    Volunteer = models.ManyToManyField(Person, through='PersonToVolunteering')
+
 
 
 ######### INTERMEDIARY TABLES ##########
 
 class PersonToCompany(models.Model):
+    def __str__(self):
+        return self.Title
+
     PersonID = models.ForeignKey(Person,  on_delete=models.CASCADE)
     CompanyID = models.ForeignKey(Company,  on_delete=models.CASCADE)
     Title = models.CharField("Title", max_length=100, default="None")
@@ -334,9 +346,13 @@ class PersonToClearance(models.Model):
 
 
 class PersonToCourse(models.Model):
+    def __str__(self):
+        return self.Desc
+
     CourseID = models.ForeignKey(Coursework,  on_delete=models.CASCADE)
     Desc = models.CharField("Coursework Description", max_length=50,default = "None")
     PersonID = models.ForeignKey(Person, on_delete=models.CASCADE)
+
 
 
 class PersonToSchool(models.Model):
